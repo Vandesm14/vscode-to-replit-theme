@@ -538,6 +538,13 @@ color-name@^1.0.0, color-name@~1.1.4:
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
+color-sorter@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/color-sorter/-/color-sorter-5.0.3.tgz#acfd9c9fc08256b945d2b1d0c6bd8eb1beea38ec"
+  integrity sha512-ckFR4uRZnuhtW2dg+J1VQM6qVO4lxASK5pYMk7IXuGNBtBUuvScMY/8NNfq3zJ/zsiNTccX6fANlf/fjqO/3JA==
+  dependencies:
+    colord "^2.9.2"
+
 color-string@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/color-string/-/color-string-1.9.1.tgz#4467f9146f036f855b764dfb5bf8582bf342c7a4"
@@ -553,6 +560,11 @@ color@^4.2.3:
   dependencies:
     color-convert "^2.0.1"
     color-string "^1.9.0"
+
+colord@^2.9.2:
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/colord/-/colord-2.9.3.tgz#4f8ce919de456f1d5c1c368c307fe20f3e59fb43"
+  integrity sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==
 
 concat-map@0.0.1:
   version "0.0.1"

@@ -1,6 +1,7 @@
 import Color from 'color';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { sortFn } from 'color-sorter';
 
 interface Token {
   name?: string;
@@ -20,17 +21,15 @@ interface Theme {
 
 function App() {
   const [text, setText] = React.useState('');
-  const [json, setJson] = React.useState<Theme | null>();
   const [colors, setColors] = React.useState<Array<string>>();
+  const [scopes, setScopes] = React.useState<Map<string, string[]>>(new Map());
 
   const validate = () => {
     let asJson = null;
     try {
       asJson = JSON.parse(text);
-      setJson(asJson);
     } catch (error) {
       alert('Invalid JSON');
-      setJson(null);
     }
 
     if (asJson) {
@@ -42,20 +41,33 @@ function App() {
     // get all colors from the theme
     // dedupe the colors and sort them (roygbiv)
     const allColors: Array<string> = [];
+    const newScopes: Map<string, string[]> = new Map();
+
+    const upsert = (color: string, scope: string) => {
+      const existing = newScopes.get(color);
+      if (existing) {
+        newScopes.set(color, [...existing, scope]);
+      } else {
+        newScopes.set(color, [scope]);
+      }
+    };
 
     // semantic token colors
-    Object.values(theme.semanticTokenColors).forEach((color) => {
+    Object.entries(theme.semanticTokenColors).forEach(([scope, color]) => {
       allColors.push(Color(color.foreground).hsl().string());
+      upsert(Color(color.foreground).hex(), scope);
     });
 
     // token colors
     theme.tokenColors.forEach((token) => {
       allColors.push(Color(token.settings.foreground).hsl().string());
+      upsert(Color(token.settings.foreground).hex(), token.scope);
     });
 
     // colors
-    Object.values(theme.colors).forEach((color) => {
+    Object.entries(theme.colors).forEach(([scope, color]) => {
       allColors.push(Color(color).hsl().string());
+      upsert(Color(color).hex(), scope);
     });
 
     // dedupe
@@ -64,16 +76,19 @@ function App() {
     );
 
     // sort the colors by their RGB values (msb to lsb)
-    const sortedColors = dedupedColors.sort((a, b) => {
-      const aRGB = Color(a).rgb().array();
-      const bRGB = Color(b).rgb().array();
-      const aNum = aRGB[0] * 256 * 256 + aRGB[1] * 256 + aRGB[2];
-      const bNum = bRGB[0] * 256 * 256 + bRGB[1] * 256 + bRGB[2];
+    // const sortedColors = dedupedColors.sort((a, b) => {
+    //   const aRGB = Color(a).rgb().array();
+    //   const bRGB = Color(b).rgb().array();
+    //   const aNum = aRGB[0] * 256 * 256 + aRGB[1] * 256 + aRGB[2];
+    //   const bNum = bRGB[0] * 256 * 256 + bRGB[1] * 256 + bRGB[2];
 
-      return aNum - bNum;
-    });
+    //   return aNum - bNum;
+    // });
+
+    const sortedColors = dedupedColors.sort(sortFn);
 
     setColors(sortedColors);
+    setScopes(newScopes);
   };
 
   const textColorForBg = (bgColor: string) => {
@@ -100,7 +115,14 @@ function App() {
                   width: 'max-content',
                 }}
               >
-                {Color(color).hex()}
+                {Color(color).hex()}{' '}
+                {scopes.has(Color(color).hex()) ? (
+                  <ul>
+                    {scopes.get(Color(color).hex())?.map((scope, index) => (
+                      <li key={index}>{scope}</li>
+                    ))}
+                  </ul>
+                ) : null}
               </li>
             ))
           : null}
